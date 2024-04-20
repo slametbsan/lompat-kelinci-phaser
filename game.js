@@ -9,7 +9,14 @@ var snd_music = null;
 
 class sceneMenu extends Phaser.Scene {
    constructor() {
-      super({ key: "sceneMenu" });
+      super({
+         key: "sceneMenu",
+         pack: {
+            files: [
+               { type: 'image', key: 'logo', url: 'assets/gamedev_smkn1ngk.png' }
+            ]
+         }
+      });
    }
 
    preload() {
@@ -37,6 +44,47 @@ class sceneMenu extends Phaser.Scene {
          { key: 'musik', url: ['musik_bg.mp3'] },
          { key: 'klik', url: ['fx_klik.ogg'] },
       ]);
+
+      for (var i = 0; i < 5000; i++) {
+         this.load.image('logo' + i, 'gamedev_smkn1ngk.png');
+      }
+
+      var width = game.canvas.width;
+      var height = game.canvas.height;
+
+      var progressBar = this.add.graphics();
+
+      var progressBox = this.add.graphics();
+      progressBox.fillStyle(0x222222, 0.7);
+      // progressBox.fillRect(x, y, w, h);
+      progressBox.fillRect(width / 2 - 190, height / 2 + 40, 383, 20);
+
+      var logoImage = this.add.image(width / 2, height / 2, 'logo');
+
+      var percentText = this.add.text(width / 2, height / 2 + 50, '0%', {
+         font: '10px monospace',
+         fill: '#ffffff'
+      });
+      percentText.setOrigin(0.5, 0.5);
+
+      this.load.on('progress', function (value) {
+         percentText.setText(parseInt(value * 100) + '%');
+         progressBar.clear();
+         progressBar.fillStyle(0xffffff, 1);
+         // progressBar.fillRect(250, 280, 300 * value, 30);
+         progressBar.fillRect(width / 2 - 180, height / 2 + 45, 373 * value, 10);
+      });
+
+      this.load.on('fileprogress', function (file) {
+         assetText.setText('Loading asset: ' + file.key);
+      });
+
+      this.load.on('complete', function () {
+         progressBar.destroy();
+         progressBox.destroy();
+         percentText.destroy();
+         logoImage.destroy();
+      });
    }
 
    create() {
